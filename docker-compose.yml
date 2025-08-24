@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  hello-service:
+    build: ./backend/helloService
+    container_name: mern-hello-service
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/mernapp
+    depends_on:
+      - mongo
+
+  profile-service:
+    build: ./backend/profileService
+    container_name: mern-profile-service
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/mernapp
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: mern-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - hello-service
+      - profile-service
+
+  mongo:
+    image: mongo:5
+    container_name: mern-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
